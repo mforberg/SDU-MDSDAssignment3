@@ -1,0 +1,43 @@
+grammar sdu.mdsd.Assignment3 with org.eclipse.xtext.common.Terminals
+
+generate assignment3 "http://www.mdsd.sdu/Assignment3"
+
+Expressions:
+	expressions+=MathExp+
+;
+
+MathExp:
+	'result' varName=STRING 'is' exp=Exp
+;
+
+Exp returns Expression:
+	Factor (('+' {Plus.left=current} | '-' {Minus.left=current}) right=Factor)*
+;
+
+Factor returns Expression:
+	Primary (('*' {Mult.left=current} | '/' {Div.left=current}) right=Primary)*	
+;
+
+External returns Expression:
+	{Ext} base=INT '^' exponent=INT
+;
+
+Primary returns Expression:
+	External | Number | Parenthesis | VariableBinding | VariableUse
+;
+
+VariableUse returns Expression:
+	{Var} id=ID
+;
+
+VariableBinding returns Expression:
+	{Let} 'let' id=ID '=' binding=Exp 'in' body=Exp 'end'
+;
+
+Parenthesis returns Expression:
+	'(' Exp ')'
+;
+
+Number returns Expression:
+	{Num} value=INT
+;
